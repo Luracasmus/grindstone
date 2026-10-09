@@ -5,7 +5,7 @@
 #include <grindstone:config.glsl>
 #include <grindstone:srgb.glsl>
 
-#ifndef GL_AMD_shader_trinary_minmax
+#if (!defined GL_AMD_shader_trinary_minmax) || (GL_AMD_shader_trinary_minmax != 1)
 	#define min3(a, b, c) min(a, min(b, c))
 	#define max3(a, b, c) max(a, max(b, c))
 #endif
