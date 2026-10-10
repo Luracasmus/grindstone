@@ -1,14 +1,15 @@
 #version 440
 #extension GL_ARB_separate_shader_objects : require
-#extension GL_AMD_shader_trinary_minmax : enable
 
-#include <grindstone:config.glsl>
-#include <grindstone:srgb.glsl>
-
-#if (!defined GL_AMD_shader_trinary_minmax) || (GL_AMD_shader_trinary_minmax != 1)
+#if defined GL_AMD_shader_trinary_minmax && (GL_AMD_shader_trinary_minmax == 1)
+	#extension GL_AMD_shader_trinary_minmax : require
+#else
 	#define min3(a, b, c) min(a, min(b, c))
 	#define max3(a, b, c) max(a, max(b, c))
 #endif
+
+#include <grindstone:config.glsl>
+#include <grindstone:srgb.glsl>
 
 #define saturate(v) clamp(v, 0.0, 1.0)
 
