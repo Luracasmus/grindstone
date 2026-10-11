@@ -1,13 +1,6 @@
 #version 440
 #extension GL_ARB_separate_shader_objects : require
 
-#if defined GL_AMD_shader_trinary_minmax && (GL_AMD_shader_trinary_minmax == 1)
-	#extension GL_AMD_shader_trinary_minmax : require
-#else
-	#define min3(a, b, c) min(a, min(b, c))
-	#define max3(a, b, c) max(a, max(b, c))
-#endif
-
 #include <grindstone:config.glsl>
 #include <grindstone:srgb.glsl>
 
@@ -36,8 +29,8 @@ void main() {
 	//  d e f * 0.5  +  d e f * 0.5
 	//  g h i             h
 	// These are 2.0x bigger (factored out the extra multiply).
-	lowp float minimum = min3(min3(d.g, e.g, f.g), b.g, h.g);
-	lowp float maximum = max3(max3(d.g, e.g, f.g), b.g, h.g);
+	lowp float minimum = min(min(min(d.g, e.g), min(f.g, b.g)), h.g);
+	lowp float maximum = max(max(max(d.g, e.g), max(f.g, b.g)), h.g);
 
 	#ifdef CAS_BETTER_DIAGONALS
 		const lowp float a = texelFetchOffset(SwapSampler, texel, 0, ivec2(-1, -1)).g;
@@ -48,8 +41,8 @@ void main() {
 		// Converting to linear after the min/max here is correct,
 		// since the sRGB -> linear function is increasing over [0, 1].
 
-		minimum += min(minimum, linear(min(min3(a, c, g), i)));
-		maximum += max(maximum, linear(max(max3(a, c, g), i)));
+		minimum += min(minimum, linear(min(min(a, c), min(g, i))));
+		maximum += max(maximum, linear(max(max(a, c), max(g, i))));
 	#endif
 
 	// Smooth minimum distance to signal limit divided by smooth max.
